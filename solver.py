@@ -39,23 +39,23 @@ class Solver:
         [cur_row, cur_col] = self.last_accessed_cell
         for col in range(cur_col, 10):
             # first (possibly partial) row has a slightly different loop
-            if self.input_board[cur_row, col] == ".":
+            if self.input_board[cur_row][col] == 0:
                 self.last_accessed_cell = [cur_row, col]
                 return self.last_accessed_cell
         for row in range(cur_row, 10):
             for col in range(10):
-                if self.input_board[row][col] == ".":
+                if self.input_board[row][col] == 0:
                     self.last_accessed_cell = [row, col]
                     return self.last_accessed_cell
         return [-1, -1]
-    
+
     def construct_maps(self):
         '''
         Given an input board, construct hash maps to store list of possible solutions for each tile.
         '''
         for row in range(9):
             for col in range(9):
-                if self.input_board[row][col] != ".":
+                if self.input_board[row][col] != 0:
                     self.candidate_map[(row,col)] = {self.input_board[row][col]}
                     if not self.remove_row_candidates(row, col, self.input_board[row][col]) or \
                     not self.remove_col_candidates(row, col, self.input_board[row][col]) or \
@@ -108,3 +108,9 @@ class Solver:
                     if not self.candidate_map[(r,c)]:
                         return False
         return True
+
+
+if __name__ == "__main__":
+    from manage_input import InputData
+    difficulty = "easy"   # options: ["easy", "medium", "hard"]
+    S = Solver(InputData(difficulty).board)
