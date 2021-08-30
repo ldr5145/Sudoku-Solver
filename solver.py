@@ -11,18 +11,44 @@ class Solver:
         self.input_board = board
         self.candidate_map = {(x,y):set([i for i in range(1,10)]) for x in range(9) for y in range(9)}
 
+        self.last_accessed_cell = [0,0]
+
         try:
             if not self.construct_maps():
                 raise Exception
         except Exception as err:
             print("EXCEPTION: <INPUT ERROR>")
             print("input puzzle is unsolvable.")
+            return -1
 
     def solve(self):
         '''
         Construct a solution to the input puzzle.
+
+        Idea: Use a selection algorithm to pick an empty cell and assign a valid candidate number to that cell.
+        Continually do this until all cells are filled or we reach an unsolvable state. In the latter case, undo the
+        most recent decisions until the game becomes solvable again, and continue.
         '''
         pass
+
+    def select_in_order(self):
+        '''
+        Simple algorithm for determining which cell to choose next. Reads board from left to right, top to bottom and
+        returns the next empty cell after a maintained class pointer
+        '''
+        [cur_row, cur_col] = self.last_accessed_cell
+        for col in range(cur_col, 10):
+            # first (possibly partial) row has a slightly different loop
+            if self.input_board[cur_row, col] == ".":
+                self.last_accessed_cell = [cur_row, col]
+                return self.last_accessed_cell
+        for row in range(cur_row, 10):
+            for col in range(10):
+                if self.input_board[row][col] == ".":
+                    self.last_accessed_cell = [row, col]
+                    return self.last_accessed_cell
+        return [-1, -1]
+    
     def construct_maps(self):
         '''
         Given an input board, construct hash maps to store list of possible solutions for each tile.
